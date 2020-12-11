@@ -251,8 +251,8 @@ def check(board):
 
 
 boardList = []
-#with open(sys.argv[1]) as f:
-with open("sudoku_puzzles_1.txt") as f:
+with open("Sudoku/" + sys.argv[1]) as f:
+#with open("sudoku_puzzles_1.txt") as f:
     boardList = [line.strip() for line in f]
 
 #boardList=[]
@@ -268,10 +268,10 @@ for board in boardList:
     if check(board):
         dict, ones = populate(board)
         result = csp_backtracking2(board, dict, ones)
-        #print(result)
-        #print(str(count) + " " + str(crude_check(result)))
-    #else:
-        #print(board)
+        print(result)
+        print(str(count) + " " + str(crude_check(result)))
+    else:
+        print(board)
         #print(str(count) + " False")
     count += 1
 

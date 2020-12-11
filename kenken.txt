@@ -1,0 +1,23 @@
+AABBCDDEFGHCIJEFGHKIJLMNHKOOLMNPQORSSNPQTRUUVVQTT
+A 3 /
+B 2 -
+C 12 x
+D 3 /
+E 8 +
+F 9 +
+G 10 +
+H 42 x
+I 1 -
+J 2 /
+K 4 -
+L 3 /
+M 5 -
+N 30 x
+O 12 x
+P 3 -
+Q 15 +
+R 2 -
+S 11 +
+T 140 x
+U 7 +
+V 6 x

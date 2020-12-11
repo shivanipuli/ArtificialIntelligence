@@ -264,8 +264,8 @@ def check(board):
     return True
 
 boardList=[]
-#with open(sys.argv[1]) as f:
-with open("sudoku_puzzles_1.txt") as f:
+with open(sys.argv[1]) as f:
+#with open("sudoku_puzzles_1.txt") as f:
     boardList = [line.strip() for line in f]
 
 #boardList=[]
@@ -280,11 +280,12 @@ for board in boardList:
     if check(board):
         dict,board=forward_looking(board)
         result=csp_backtracking2(board, dict)
-        #print(result)
+        print(result)
         #print(str(count)+" " + str(crude_check(result)))
-    #else:
+    else:
+        print(board)
         #print_board(board)
         #print(str(count) + " False")
     count+=1
-print("Total time: %ss" %(time.perf_counter()-times))
+#print("Total time: %ss" %(time.perf_counter()-times))
 
