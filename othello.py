@@ -232,20 +232,26 @@ def end_game_score(board):
 def mid_game_score(board):
      token="x"
      opponent="o"
+     score=0
      #corners
      corners = (board[0], board[7], board[56], board[63])
-     score=sum([15 if item==token else -15 if item==opponent else 0 for item in corners])
+     score=sum([10 if item==token else -10 if item==opponent else 0 for item in corners])
+     #print("Corners: " + str(score))
      # check mobility
      xmoves = len(possibleMoves(board, token))
      omoves=len(possibleMoves(board,opponent))
-     score+=128/(2**(omoves/2))-128/(2**(xmoves/2))
+     score+=300/(2**omoves)-300/(2**xmoves)
+     print("Future Moves: %s %s" %(xmoves,omoves))
      # check count of pieces -> more important as there are less spaces open
-     score += (board.count(token) - board.count(opponent))*(64-board.count("."))
+     score += (board.count(token) - board.count(opponent))*(64-board.count("."))//64
      # check edges
      edges=[1,8,9,6,14,15,48,49,57,54,55,62]
      edge=[board[e] for e in edges]
-     score+=1.5*(edge.count("o")-edge.count("x"))
+     #print("Edges: " + str(edge))
+     score+=2*(edge.count("o")-edge.count("x"))
+     #print("Pieces: %s %s" %(board.count("x"),board.count("o")))
      # check if game over
+     score = 1/(omoves+1)-1/(xmoves+1)
      if "." not in board:
          num = board.count(token)
          if num < 33:
@@ -284,7 +290,7 @@ def mid_game_score(board):
 #     return score
 
 def max_step(state,depth,alpha,beta):
-    #print_puzzle(state)
+    print_puzzle(state)
     if depth==0:
         return mid_game_score(state)
     results=[]
@@ -303,7 +309,7 @@ def max_step(state,depth,alpha,beta):
     return alpha
 
 def min_step(state,depth,alpha,beta):
-    #print_puzzle(state)
+    print_puzzle(state)
     if depth==0:
         return mid_game_score(state)
     results = []
@@ -378,18 +384,28 @@ class Strategy():
 #play_game()
 
 # board=""
-# board+=".x.ooo.."
-# board+="..xoo..."
-# board+="..oxoo.."
-# board+="xxxxxo.."
-# board+="..xx..o."
 # board+="....x..."
+# board+="....x..."
+# board+=".xxxxx.."
+# board+="..oooxo."
+# board+="..xxxxx."
+# board+=".x.x.x.."
+# board+="..xx..o."
+# board+="...x...."
 # board+="........"
-# board+="........"
-#
-# token="o"
+# board="oxo.ox..oxxoo...oxxxoo..oxxxox...xxxxx....xxx......x............"
+# board=".oooooo..xoxxxx..xxoox...xoxxx..xoooxxx.oooooxxx.......x........"
+# token="x"
 # print_puzzle(board)
 #
 # for m in possibleMoves(board,token):
 #     new_board=move(board,token,m)
 #     print_puzzle(new_board)
+#
+# m=find_next_move(board,"x",2)
+# new_board=move(board,token,m)
+# print_puzzle(new_board)
+
+board=".................ooooxx...ooxxx..ooxxo.x.oxxoo..ox......x......."
+print_puzzle(board)
+find_next_move(board,"o",2)

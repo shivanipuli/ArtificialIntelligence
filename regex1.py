@@ -18,9 +18,8 @@ if idx < len(myRegexLst):
   print(myRegexLst[idx])
 
 
-import sys
-
-idx = int(x=sys.argv[1])-30
+import sys; args = sys.argv[1:]
+idx = int(args[0])-30
 
 myRegEx = [r"/^0$|^10[01]$/",
            r"/^[01]*$/",
