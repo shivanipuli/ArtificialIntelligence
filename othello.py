@@ -2,6 +2,18 @@ import sys
 import random
 import time
 
+sq_weights = [
+    0,0,0,0,0,0,0,0,
+    0,280,-40,30,15,15,30,-40,280,0,
+    0,-20,-180,-5,-5,-5,-5,-90,-180,0,
+    0,30,-5,15,3,3,15,-5,30,0,
+    0,15,-5,3,3,3,3,-5,15,0,
+    0,15,-5,3,3,3,3,-5,15,0,
+    0,30,-5,15,3,3,15,-5,30,0,
+    0,-20,-180,-5,-5,-5,-5,-90,-180,0,
+    0,280,-40,30,15,15,30,-40,280,0,
+    0,0,0,0,0,0,0,0
+]
 def print_puzzle(board):
     for i in range(8):
         print(" ".join(list(board[i*8:(i+1)*8])))
@@ -193,104 +205,77 @@ def end_game_score(board):
     score=0
     token="x"
     opponent="o"
+    #check tokens
+    score += 15 * (board.count(token) - board.count(opponent))
     # check corners
     corners=(board[0],board[7],board[56],board[63])
     score=sum([15 if item==token else -15 if item==opponent else 0 for item in corners])
     #check edges
-    edges=[1,8,9,6,14,15,48,49,57,54,55,62]
-    edge=[board[e] for e in edges]
-    score+=2*edge.count("o")
-    score-=2*edge.count("x")
+    #edges=[1,8,9,6,14,15,48,49,57,54,55,62]
+    #edge=[board[e] for e in edges]
+    #score+=2*edge.count("o")
+    #score-=2*edge.count("x")
     #check mobility
     xmoves=len(possibleMoves(board,token))
     omoves=len(possibleMoves(board,opponent))
     #print("%s  %s" %(lmoves,xmoves))
-    if xmoves<2:
-        score-=50
-    elif xmoves<4:
-        score-=35
-    if omoves<2:
-        score+=50
-    elif omoves<4:
-        score+=35
-    score+=5*(xmoves-omoves)
-    #check count of pieces
-    score+=3*(board.count(token)-board.count(opponent))
+    score+=10*(xmoves-omoves)
     # check win
     if "." not in board:
-        num=board.count(token)
-        if num<33:
-            score=5000
-        elif num>33:
-            score+=500
-    elif "o" not in board:
-        score+=100
-    elif "x" not in board:
-        score-=100
+        num = board.count(token)
+        if num < 33:
+            score = 5000 + num
+        elif num > 33:
+            score += 5000 - num
     return score
 
+def mid_game_scorex(board,player):
+    count=0
+    for i in board:
+        if i == ".":
+            count+=1
+    if player=="x" and count>70:
+        return len(possibleMoves(board,"x"))*board.count("x") / board.count("o") *10
+    elif count>70:
+        return len(possibleMoves(board, "o")) * board.count("o")/ board.count("x") *10
+    else:
+        total=0
+        for sq in range(64):
+            if board[sq] == player:
+                total+=sq_weights[sq]
+            elif board[sq] == "xo".replace(player,""):
+                total -= sq_weights[sq]
+        return total
+
 def mid_game_score(board):
+     if board.count(".")<12:
+         return end_game_score(board)
      token="x"
      opponent="o"
-     score=0
+     score=0  
      #corners
      corners = (board[0], board[7], board[56], board[63])
-     score=sum([10 if item==token else -10 if item==opponent else 0 for item in corners])
+     score=sum([35 if item==token else -35 if item==opponent else 0 for item in corners])
      #print("Corners: " + str(score))
      # check mobility
      xmoves = len(possibleMoves(board, token))
      omoves=len(possibleMoves(board,opponent))
-     score+=300/(2**omoves)-300/(2**xmoves)
-     print("Future Moves: %s %s" %(xmoves,omoves))
+     score+=15*(xmoves-omoves)
+     #print("Future Moves: %s %s" %(xmoves,omoves))
      # check count of pieces -> more important as there are less spaces open
-     score += (board.count(token) - board.count(opponent))*(64-board.count("."))//64
+     score += (board.count(token) - board.count(opponent))
      # check edges
      edges=[1,8,9,6,14,15,48,49,57,54,55,62]
      edge=[board[e] for e in edges]
+     score+=2*edge.count("o")
+     score-=2*edge.count("x")
      #print("Edges: " + str(edge))
-     score+=2*(edge.count("o")-edge.count("x"))
+     #score+=2*(edge.count("o")-edge.count("x"))
      #print("Pieces: %s %s" %(board.count("x"),board.count("o")))
-     # check if game over
-     score = 1/(omoves+1)-1/(xmoves+1)
-     if "." not in board:
-         num = board.count(token)
-         if num < 33:
-             score = 5000 + num
-         elif num > 33:
-             score += 5000 - num
      return score
-#     if board.count(".")<10:
-#         return end_game_score(board)
-#     score=0
-#     token="x"
-#     opponent="o"
-#     # check corners
-#     corners=(board[0],board[7],board[56],board[63])
-#     score=sum([15 if item==token else -15 if item==opponent else 0 for item in corners])
-#     #check edges
-#     edges=[1,8,9,6,14,15,48,49,57,54,55,62]
-#     edge=[board[e] for e in edges]
-#     score+=1.5*edge.count("o")
-#     score-=1.5*edge.count("x")
-#     #check mobility
-#     xmoves=len(possibleMoves(board,token))
-#     omoves=len(possibleMoves(board,opponent))
-#     #print("%s  %s" %(lmoves,xmoves))
-#     if xmoves < 2:
-#         score -= 40
-#     elif xmoves < 4:
-#         score -= 25
-#     if omoves < 2:
-#         score += 40
-#     elif omoves < 4:
-#         score += 25
-#     score+=40*(xmoves-omoves)
-#     #check count of pieces
-#     score += .3*(board.count(token) - board.count(opponent))
-#     return score
 
 def max_step(state,depth,alpha,beta):
-    print_puzzle(state)
+    #print_puzzle(state)
     if depth==0:
         return mid_game_score(state)
     results=[]
@@ -309,7 +294,7 @@ def max_step(state,depth,alpha,beta):
     return alpha
 
 def min_step(state,depth,alpha,beta):
-    print_puzzle(state)
+    #print_puzzle(state)
     if depth==0:
         return mid_game_score(state)
     results = []
@@ -317,7 +302,7 @@ def min_step(state,depth,alpha,beta):
         result=max_step(child,depth-1,alpha,beta)
         if alpha>=result:
             return result
-        if result < beta:
+        if beta > result:
             beta=result
         results.append(result)
     #check if game is over
@@ -331,7 +316,8 @@ def max_move(board,depth):
     max_num=-10000
     max_ind=-1
     for ind in possibleMoves(board,"x"):
-        num=max_step(move(board,"x",ind),depth,-10000,10000)
+        new_board=move(board,"x",ind)
+        num=min_step(new_board,depth,-10000,10000)
         if num>max_num:
             max_num=num
             max_ind=ind
@@ -341,7 +327,7 @@ def min_move(board,depth):
     min_num=10000
     min_ind=-1
     for ind in possibleMoves(board,"o"):
-        num=min_step(move(board,"o",ind),depth,-10000,10000)
+        num=max_step(move(board,"o",ind),depth,-10000,10000)
         if num<min_num:
             min_num=num
             min_ind=ind
@@ -406,6 +392,7 @@ class Strategy():
 # new_board=move(board,token,m)
 # print_puzzle(new_board)
 
-board=".................ooooxx...ooxxx..ooxxo.x.oxxoo..ox......x......."
-print_puzzle(board)
-find_next_move(board,"o",2)
+#board=".................ooooxx...ooxxx..ooxxo.x.oxxoo..ox......x......."
+#print_puzzle(board)
+#print(find_next_move(board,"x",2))
+
