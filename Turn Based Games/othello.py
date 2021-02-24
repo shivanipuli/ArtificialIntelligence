@@ -201,6 +201,7 @@ def get_children(board,token):
         states.append(move(board,token,m))
     return states
 
+#CHANGES=end_game_score && mid_game_score
 def end_game_score(board):
     score=0
     token="x"
@@ -277,10 +278,12 @@ def mid_game_score(board):
 def max_step(state,depth,alpha,beta):
     #print_puzzle(state)
     if depth==0:
+        #CHANGES=implementing mid_game_score
         return mid_game_score(state)
     results=[]
     for child in get_children(state,"o"):
         result=min_step(child,depth-1,alpha,beta)
+        #PRUNING
         if result>=beta:
             return result
         if result > alpha:
@@ -288,6 +291,7 @@ def max_step(state,depth,alpha,beta):
         results.append(result)
         # check if game is over
     if len(results) == 0:
+        #implementing mid_game_score
         return mid_game_score(state)
     if max(results)<alpha:
         return max(results)
@@ -296,10 +300,12 @@ def max_step(state,depth,alpha,beta):
 def min_step(state,depth,alpha,beta):
     #print_puzzle(state)
     if depth==0:
+        # CHANGES=implementing mid_game_score
         return mid_game_score(state)
     results = []
     for child in get_children(state, "x"):
         result=max_step(child,depth-1,alpha,beta)
+        #PRUNING
         if alpha>=result:
             return result
         if beta > result:
@@ -307,6 +313,7 @@ def min_step(state,depth,alpha,beta):
         results.append(result)
     #check if game is over
     if len(results)==0:
+        # implementing mid_game_score
         return mid_game_score(state)
     if min(results)>beta:
         return min(results)
@@ -333,16 +340,6 @@ def min_move(board,depth):
             min_ind=ind
     return min_ind
 
-def find_next_move(board, player, depth):
-   # Based on whether player is x or o, start an appropriate version of minimax
-   # that is depth-limited to "depth".  Return the best available move.
-   if player=="x":
-       return max_move(board,depth)#max_step(board,depth,-100000,100000)
-   else:
-       return min_move(board,depth)#min_step(board,depth,-100000,100000)
-# All your other functions
-
-
 def play_game():
     board="...........................ox......xo............................"
     token="x"
@@ -359,13 +356,22 @@ def play_game():
         moves=possibleMoves(board,opponent)
         board=move(board,opponent,random.choice(moves))
 
-class Strategy():
-   logging = True  # Optional
-   def best_strategy(self, board, player, best_move, still_running):
-       depth = 1
-       while True:
-           best_move.value = find_next_move(board, player, depth)
-           depth += 1
+def find_next_move(board, player, depth):
+   # Based on whether player is x or o, start an appropriate version of minimax
+   # that is depth-limited to "depth".  Return the best available move.
+   if player=="x":
+       return max_move(board,depth)#max_step(board,depth,-100000,100000)
+   else:
+       return min_move(board,depth)#min_step(board,depth,-100000,100000)
+# All your other functions
+
+
+board = sys.argv[1]
+player = sys.argv[2]
+depth = 1
+for count in range(15):  # 15 is arbitrary; a depth that your code won't reach, but infinite loops crash the grader
+   print(find_next_move(board, player, depth))
+   depth += 1
 
 #play_game()
 

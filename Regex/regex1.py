@@ -1,11 +1,11 @@
 import sys; args = sys.argv[1:]
-idx = int(args[0])-30
+idx = int(args[0])-50
 
 myRegexLst = [
-  r"/^0$|^100$|^101$/",
-  r"/^[01]*$/",
+  r"/\b\w*?([a-z])\w*?\1\w*?\b/i",
+  r"/\b(?:[^a\s]*a){3}[^a\s]*\b/i",
   r"/0$/",
-  r"/\w*[aeiou]\w*[aeiou]\w*/i",
+  r"/(?=\b\w{6}\b)\b\w*cat\w*\b/i",
   r"/^[01]*$/",
   r"/^[01]*110[01]*$/",
   r"/^.\w{3}|.\w{1}$/s",
@@ -13,10 +13,6 @@ myRegexLst = [
   r"/^\w*d\w*/im",
   r"/[01]*"
   ]
-
-if idx < len(myRegexLst):
-  print(myRegexLst[idx])
-
 
 import sys; args = sys.argv[1:]
 idx = int(args[0])-30
