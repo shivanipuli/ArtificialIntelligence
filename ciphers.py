@@ -5,14 +5,17 @@ message=" ".join(sys.argv[1:])
 times=time.perf_counter()
 alphabet="ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 n_grams={}
-N=4
+N=3
 POPULATION_SIZE=500#or 300?
-NUM_ClONES=14
+NUM_ClONES=3
 TOURNAMENT_SIZE=20
-TOURNAMENT_WIN_PROBABILITY=.9
+TOURNAMENT_WIN_PROBABILITY=.75#.9
 CROSSOVER_LOCATIONS=11 #optimal
 MUTATION_RATE=.5#optimal
 answer=""
+STABLE=40
+if len(message)<300:
+    STABLE=200
 
 #populate n_grams
 with open("ngrams.txt") as f:
@@ -89,24 +92,37 @@ def mutate(cipherbet):
         ind2=temp
     return cipherbet[:ind1]+cipherbet[ind2]+cipherbet[ind1+1:ind2]+cipherbet[ind1]+cipherbet[ind2+1:]
 
-def hill_climbing():
-    cipherbet = random_cipher()
-    code=decode(cipherbet,message)
-    fitness=test_fitness(N,code)
-    while fitness>0: #arbitrary, goes infinitely
-        if time.perf_counter()-times>30:
-            return None
+def hill_climbing(cipherbet):
+    fitness=test_fitness(N,cipherbet)
+    for i in range(100): #arbitrary, goes infinitely
         new_cipher=mutate(cipherbet)
-        new_message=decode(new_cipher,code)
-        new_fitness=test_fitness(N,new_message)
+        new_fitness=test_fitness(N,new_cipher)
         if new_fitness>fitness:
             fitness=new_fitness
             cipherbet=new_cipher
-            code=new_message
-            print(code)
+            print(decode(cipherbet,message))
             print()
+    return cipherbet
 
-def create_child(cipher1,cipher2):
+def crossover(cipher1,cipher2):
+    child_cipher=[]
+    for i in range(26):
+        if random.random()<.5:
+            child_cipher.append(cipher1[i])
+        else:
+            child_cipher.append(cipher2[i])
+    missing=[letter for letter in alphabet if letter not in child_cipher]
+    random.shuffle(missing)
+    for i in range(26):
+        if child_cipher.count(child_cipher[i])>1:
+            child_cipher[i]=missing.pop()
+    child="".join(child_cipher)
+    #MUTATE
+    if random.random()<MUTATION_RATE:
+        return mutate(child)
+    return child
+
+def crossovers(cipher1,cipher2):
     child_cipher=[""]*26
     indices=random.sample(range(0,26),CROSSOVER_LOCATIONS)
     for ind in indices:
@@ -124,7 +140,7 @@ def create_child(cipher1,cipher2):
     #MUTATE
     if random.random()<MUTATION_RATE:
         child=mutate(child)
-    fitness=test_fitness(N,child)
+    #fitness=test_fitness(N,child)
     return child
 
 def tournament(parents):
@@ -141,23 +157,26 @@ def tournament(parents):
         if random.random() > TOURNAMENT_WIN_PROBABILITY:
             tourney2.remove(winner2)
             winner2 = None
-    return create_child(parents[winner1],parents[winner2])
+    return crossover(parents[winner1],parents[winner2])
 
-def new_generation(parents,gen):
-    print(gen)
-    code=decode(parents[max(parents.keys())],message)
-    if code==answer:
-        return code
-    if gen==500:
-        return decode(parents[max(parents.keys())],message)
-    children=set()#contains only ciphers
+def new_generation(parents,gen,stable):
+    print(stable)
     # Just checking best cipher
+    code = decode(parents[max(parents.keys())], message)
     print(code)
     print()
+    #if gen==0:
+    #    return parents
+    if stable==0:
+        return parents
+    children=set()#contains only ciphers
     #CLONING TOP PARENTS
     fitnesses=sorted(parents.keys())
     for fitness in fitnesses[:-NUM_ClONES-1:-1]:
         children.add(parents[fitness])
+    #ADD SOME RANDOM
+    for i in range(10):
+        children.add(random_cipher())
     #TOURNAMENT USING FITNESSES INSTEAD OF CIPHERS
     while len(children)<POPULATION_SIZE:
         child=tournament(parents)
@@ -165,7 +184,11 @@ def new_generation(parents,gen):
     child_fitnesses={}
     for cipher in children:
         child_fitnesses[test_fitness(N, cipher)] = cipher  # key=fitness,value=cipher
-    new_generation(child_fitnesses,gen+1)
+    if max(child_fitnesses.keys())==fitnesses[-1]:
+        stable-=1
+    else:
+        stable=STABLE
+    return new_generation(child_fitnesses,gen-1,stable)
 
 
 # cipherbet="XRPHIWGSONFQDZEYVJKMATUCLB"
@@ -176,7 +199,7 @@ def new_generation(parents,gen):
 # print(message)
 
 #hill_climbing()
-
+#POPULATION_SIZE=200
 parents=set()
 while len(parents)<POPULATION_SIZE:
     temp=random_cipher()#temp=alphabet string
@@ -186,7 +209,27 @@ population={}
 for cipher in parents:
     population[test_fitness(N,cipher)]=cipher #key=fitness,value=cipher
 
-new_generation(population,0)
+N=3
+STABLE=70
+if len(message)<200:
+    STABLE=200
+population=new_generation(population,700,STABLE)
+
+
+N=5
+STABLE//=2
+population=new_generation(population,500,STABLE)
+
+
+N=4
+STABLE*=2
+population=new_generation(population,500,STABLE)
+
+N=3
+STABLE//=2
+population=new_generation(population,500,STABLE)
+
+#print(decode(population[max(population.keys())],message))
 
 # print(message)
 # print()
@@ -195,5 +238,7 @@ new_generation(population,0)
 # print()
 # print(decode(cipher,message))
 
-print(time.perf_counter()-times)
+print()
+print(str(time.perf_counter()-times) + "s")
+
 

@@ -1,24 +1,28 @@
-# coding=utf8
-# the above tag defines encoding for this document and is for Python 2.x compatibility
+import sys
+from math import log
 
-import re
+n_grams={}
+#populate n_grams
+with open("ngrams.txt") as f:
+    for line in f:
+        line=line.strip()
+        segment,number=line.split(" ")
+        n_grams[segment]=int(number)
 
-regex = r"^0$|^100$|^101$\""
+message="ICALLOURWORLDMLATLANDNOTFECAUSEWECALLITSOFUTTOBAKEITSNATURECLEARERTOYOUBYHAPPYREADERSWHOAREPRIVILEGEDTOLIVEINSPACEIBAGINEAVASTSHEETOMPAPERONWHICHSTRAIGHTLINESTRIANGLESSQUARESPENTAGONSHEXAGONSANDOTHERMIGURESINSTEADOMREBAININGMIXEDINTHEIRPLACESBOVEMREELYAFOUTONORINTHESURMACEFUTWITHOUTTHEPOWEROMRISINGAFOVEORSINKINGFELOWITVERYBUCHLIKESHADOWSONLYHARDWITHLUBINOUSEDGESANDYOUWILLTHENHAVEAPRETTYCORRECTNOTIONOMBYCOUNTRYANDCOUNTRYBENALASAMEWYEARSAGOISHOULDHAVESAIDBYUNIVERSEFUTNOWBYBINDHASFEENOPENEDTOHIGHERVIEWSOMTHINGS"
+message2="YOUR FIRST EXAMPLE IS QUITE AN EASY EXAMPLE, I THINK. IT IS EASY BECAUSE THIS SENTENCE USES ALL TEN MOST COMMON WORDS IN ENGLISH: 'I HAVE TO BE A GOOD STUDENT IN THAT CLASS IN THE ROOM OF THAT TEACHER.'"
 
-test_str = ("\"101\"\n")
+def test_fitness(n, code):
+    sum=0
+    for i in range(0,len(code)-n):
+        fragment=code[i:i+n]
+        if fragment.isalpha():
+            freq=n_grams.get(fragment,0)
+            if freq>0:
+                sum+=log(freq,2)
+    return sum
 
-matches = re.search(regex, test_str)
+#print(test_fitness(5,message))
+#print(test_fitness(5,message2))
 
-if matches:
-    print("Match was found at {start}-{end}: {match}".format(start=matches.start(), end=matches.end(),
-                                                             match=matches.group()))
-
-    for groupNum in range(0, len(matches.groups())):
-        groupNum = groupNum + 1
-
-        print(
-            "Group {groupNum} found at {start}-{end}: {group}".format(groupNum=groupNum, start=matches.start(groupNum),
-                                                                      end=matches.end(groupNum),
-                                                                      group=matches.group(groupNum)))
-
-# Note: for Python 2.7 compatibility, use ur"" to prefix the regex and u"" to prefix the test string and substitution.
+print(len(message))
