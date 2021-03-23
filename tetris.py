@@ -1,6 +1,6 @@
 import sys
 
-board=sys.argv[1]#200 char string
+board="".join(sys.argv[1:])#200 char string
 #board = "          #         #         #      #  #      #  #      #  #     ##  #     ##  #     ## ##     ## #####  ########  ######### ######### ######### ######### ########## #### # # # # ##### ###   ########"
 outcomes=[]
 pieces={"I":["####5","#5#5#5#5"],"O":["##5##5"],"T":["###5 # 5","# 5##5# 5"," # 5###5"," #5##5 #5"],"S":["## 5 ##5"," #5##5# 5"],"Z":[" ##5## 5","# 5##5 #5"],"J":["###5#  5","# 5# 5##5","  #5###5","##5 #5 #5"],"L":["###5  #5","##5# 5# 5","#  5###5"," #5 #5##5"]}
@@ -78,3 +78,5 @@ for piece in pieces:
 f.close()
 # print_board(board)
 
+
+#Countermeasures in tetris board: how high up the tetris # gets on board
