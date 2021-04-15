@@ -8,7 +8,6 @@ def pretty_print_tt(table):
             print_this+=str(item)+" "
         print_this+="| "+str(out)
         print(print_this)
-    print()
 
 def truth_table(bits,n):
     outs=bin(n)
@@ -35,7 +34,10 @@ def step(num):
         return 1
     return 0
 
-def perceptron(A,w,b,x):
+def same(num):
+    return num
+
+def perceptron(A,w,b,x): #w*x+b
     num=0
     for i in range(len(w)):
         num+=w[i]*x[i]
@@ -53,6 +55,29 @@ def check(n,w,b):
     accuracy/=2**len(w)
     return accuracy
 
+def algorithm(w,b,diff,x):
+    neww=(w[0]+x[0]*diff,)
+    for i in range(1,len(w)):
+        neww+=(w[i]+x[i]*diff,)
+    newb = b + diff
+    return neww,newb
+
+def create_model(bit,mytable):
+    w = (0,) * bit
+    b = 0
+    count = 0
+    for i in range(100):
+        for row in mytable:
+            if count > 2 ** bit:
+                return w,b
+            ins, out = row[0], row[1]
+            diff = out - perceptron(step, w, b, ins)
+            if diff == 0:
+                count += 1
+            else:
+                w, b = algorithm(w, b, diff, ins)
+                count = 0
+    return w,b
 # #print(bin(100))
 # myt=truth_table(5,70)
 # print(myt)
@@ -60,7 +85,29 @@ def check(n,w,b):
 
 #print(perceptron(step, (1,1), -1.5, (1,0)))
 
-n=ast.literal_eval(sys.argv[1])
-w=ast.literal_eval(sys.argv[2])
-b=ast.literal_eval(sys.argv[3])
+# n=ast.literal_eval(sys.argv[1])
+# w=ast.literal_eval(sys.argv[2])
+# b=ast.literal_eval(sys.argv[3])
+#print(check(n,w,b))
+
+# bit=ast.literal_eval(sys.argv[1])
+# accuracy=[]
+# for n in range(4**bit):
+#     mytable=truth_table(bit,n)
+#     #pretty_print_tt(mytable)
+#     w,b=create_model(bit,mytable)
+#     #print(str(w) + " " +str(b))
+#     tru=check(n,w,b)
+#     #print(tru)
+#     accuracy.append(tru)
+#     #print()
+#
+# print("%s out of %s were modeled correctly" %(accuracy.count(1),len(accuracy)))
+
+bit=ast.literal_eval(sys.argv[1])
+n=ast.literal_eval(sys.argv[2])
+
+mytable=truth_table(bit,n)
+w,b=create_model(bit,mytable)
+print(str(w) + " " +str(b))
 print(check(n,w,b))

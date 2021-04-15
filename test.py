@@ -1,5 +1,11 @@
+def mystery(num, y):
+    if y==0:
+        return 1
+    return num*mystery(num,y-1)
 
-list1=[(4,3),(6,3)]
-list2=[(4,1),(7,3)]
+def recur(n):
+    if n<=10:
+        return n*2
+    return recur(recur(n//3))
 
-print() cmp(list1,list2)
+print(recur(27))
