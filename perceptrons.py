@@ -90,24 +90,25 @@ def create_model(bit,mytable):
 # b=ast.literal_eval(sys.argv[3])
 #print(check(n,w,b))
 
-# bit=ast.literal_eval(sys.argv[1])
-# accuracy=[]
-# for n in range(4**bit):
-#     mytable=truth_table(bit,n)
-#     #pretty_print_tt(mytable)
-#     w,b=create_model(bit,mytable)
-#     #print(str(w) + " " +str(b))
-#     tru=check(n,w,b)
-#     #print(tru)
-#     accuracy.append(tru)
-#     #print()
-#
-# print("%s out of %s were modeled correctly" %(accuracy.count(1),len(accuracy)))
-
 bit=ast.literal_eval(sys.argv[1])
-n=ast.literal_eval(sys.argv[2])
+accuracy=[]
+for n in range(2**(2**bit)):
+    mytable=truth_table(bit,n)
+    pretty_print_tt(mytable)
+    w,b=create_model(bit,mytable)
+    tru = check(n, w, b)
+    print(str(w) + " " +str(b))
+    print(tru)
+    accuracy.append(tru)
+    print()
 
-mytable=truth_table(bit,n)
-w,b=create_model(bit,mytable)
-print(str(w) + " " +str(b))
-print(check(n,w,b))
+print("%s out of %s were modeled correctly" %(accuracy.count(1),len(accuracy)))
+
+# bit=ast.literal_eval(sys.argv[1])
+# n=ast.literal_eval(sys.argv[2])
+#
+# mytable=truth_table(bit,n)
+# w,b=create_model(bit,mytable)
+# pretty_print_tt(mytable)
+# print(str(w) + " " +str(b))
+# print(check(n,w,b))
