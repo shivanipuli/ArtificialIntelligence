@@ -1,3 +1,10 @@
+#README
+# Purpose: Uses neural network with 2x2 matrices to define circle
+# input options
+# [./perceptrons4] checks if two random (x,y) coordinates fit inside circle of radius 1; repeats 500x
+# [./perceptrons4 [x,y]] XORs two bits if given in format [x,y] (ex. ./perceptrons4 [1,0])
+# [./perceptrons4 myX myY] checks if (myX, myY) coordinates fall outside of radius 1 circle
+
 import numpy as np
 import sys,ast
 import math, random

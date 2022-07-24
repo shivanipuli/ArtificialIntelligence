@@ -1,4 +1,6 @@
 import ast,sys
+#README: 1 input = integer ./perceptrons myint
+# myint = number of bits (1-3 working accurately)
 
 def pretty_print_tt(table):
     for tuple1 in table:
