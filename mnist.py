@@ -1,3 +1,6 @@
+# Need to download mnist_test.csv from web for fully functioning code
+# Then test using mnist_testing.py
+
 import numpy as np
 import random,sys,math
 import csv
