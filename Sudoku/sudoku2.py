@@ -10,7 +10,7 @@ def print_board(board):
             left=(N*row+split*subblock_width)
             right=N * row + (split+1) * subblock_width
             print(" ".join(board[left:right]), end="   ")
-        print()
+        print():
 
 def make_constraints(board):
     N = int(len(board) ** .5)
@@ -40,7 +40,7 @@ def make_constraints(board):
             indToBox[ind]=box
             lis=boxToInd.get(box,[])
             boxToInd[box]=lis+[ind]
-    return N, height, width, symbol_set,indToBox,boxToInd
+    return N, height, width, symbol_set,indToBox,boxToInd:
 
 def is_valid(state,ind,symbol):
     row=ind//N
